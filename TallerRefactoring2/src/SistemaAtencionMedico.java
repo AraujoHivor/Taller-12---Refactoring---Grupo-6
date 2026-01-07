@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SistemaAtencionMedico {
+
+    private static final double DESCUENTO_ADULTO_MAYOR = 0.25;
+
     private List<Paciente> pacientes;
     private List<Medico> medicos;
     private List<ServicioMedico> serviciosMedicos;
@@ -24,44 +27,41 @@ public class SistemaAtencionMedico {
         serviciosMedicos.add(servicioMedico);
     }
 
-    public void agendarConsulta(Paciente paciente, Consulta consulta){
-        double costoConsulta = consulta.getServicioMedico().getCosto();
-        int edadPaciente = paciente.getEdad();
-        costoConsulta = calcularValorFinalConsulta(costoConsulta,edadPaciente);
-        System.out.println("Se han cobrado "+ costoConsulta+ " dolares de su tarjeta de credito");
-        paciente.historialMedico.getConsultas().add(consulta); //Hacer esto es incorrecto
+    public void registrarConsulta(Paciente paciente, Consulta consulta) {
+        double costoFinal = calcularValorFinalConsulta(consulta.getServicioMedico().getCosto(), paciente);
+        System.out.println("Se han cobrado " + costoFinal + " dolares de su tarjeta de credito");
+        paciente.getHistorialMedico().agregarConsulta(consulta);
     }
 
-    public double calcularValorFinalConsulta(double costoConsulta, int edadPaciente){
-        double valorARestar = 0;
-        if(edadPaciente>=65){
-            valorARestar = costoConsulta*0.25; //0.25 es el descuento para adultos mayores
+    public double calcularValorFinalConsulta(double costoConsulta, Paciente paciente) {
+        if (paciente.esAdultoMayor()) {
+            return costoConsulta - (costoConsulta * DESCUENTO_ADULTO_MAYOR);
         }
-        return costoConsulta-valorARestar;
+        return costoConsulta;
     }
 
-    // se puede parametrizar (obtener...)
+    public <T> T obtenerPorNombre(List<T> lista, String nombre) {
+        for (T elemento : lista) {
+            if (elemento instanceof Paciente && ((Paciente) elemento).getNombre().equals(nombre))
+                return elemento;
+            if (elemento instanceof Medico && ((Medico) elemento).getNombre().equals(nombre))
+                return elemento;
+            if (elemento instanceof ServicioMedico && ((ServicioMedico) elemento).getNombre().equals(nombre))
+                return elemento;
+        }
+        return null;
+    }
+
     public Paciente obtenerPaciente(String nombrePaciente) {
-        for(Paciente paciente : pacientes){
-            if (paciente.getNombre().equals(nombrePaciente))
-                return paciente;
-        }
-        return null;
-    }
-
-    public ServicioMedico obtenerServicioMedico(String nombreServicio) {
-        for(ServicioMedico servicioMedico : serviciosMedicos){
-            if (servicioMedico.getNombre().equals(nombreServicio))
-                return servicioMedico;
-        }
-        return null;
+        return obtenerPorNombre(pacientes, nombrePaciente);
     }
 
     public Medico obtenerMedico(String nombreMedico) {
-        for(Medico medico : medicos){
-            if (medico.getNombre().equals(nombreMedico))
-                return medico;
-        }
-        return null;
+        return obtenerPorNombre(medicos, nombreMedico);
+    }
+
+    public ServicioMedico obtenerServicioMedico(String nombreServicio) {
+        return obtenerPorNombre(serviciosMedicos, nombreServicio);
     }
 }
+

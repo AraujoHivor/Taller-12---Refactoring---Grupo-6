@@ -1,4 +1,5 @@
 public class Persona {
+
     private String nombre;
     private int edad;
     private String genero;
@@ -6,13 +7,14 @@ public class Persona {
     private String telefono;
     private String correoElectronico;
 
-    public Persona(String nombre, int edad, String genero, String direccion, String telefono, String correoElectronico) {
-        this.nombre = nombre;
-        this.edad = edad;
-        this.genero = genero;
-        this.direccion = direccion;
-        this.telefono = telefono;
-        this.correoElectronico = correoElectronico;
+    public Persona(String nombre, int edad, String genero, String direccion,
+                   String telefono, String correoElectronico) {
+        setNombre(nombre);
+        setEdad(edad);
+        setGenero(genero);
+        setDireccion(direccion);
+        setTelefono(telefono);
+        setCorreoElectronico(correoElectronico);
     }
 
     public String getNombre() {
@@ -28,6 +30,9 @@ public class Persona {
     }
 
     public void setEdad(int edad) {
+        if (edad < 0) {
+            throw new IllegalArgumentException("La edad no puede ser negativa");
+        }
         this.edad = edad;
     }
 
@@ -63,3 +68,4 @@ public class Persona {
         this.correoElectronico = correoElectronico;
     }
 }
+
